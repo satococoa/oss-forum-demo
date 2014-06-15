@@ -1,9 +1,11 @@
 class MemosController < UITableViewController
   def viewDidLoad
     @item = ['a', 'b', 'c']
+    SVProgressHUD.show
     BW::HTTP.get('https://qiita.com/api/v1/items') do |response|
       @item = BW::JSON.parse(response.body.to_s)
       self.tableView.reloadData
+      SVProgressHUD.dismiss
     end
     self.title = 'メモ一覧'
     self.refreshControl = UIRefreshControl.new.tap do |refresh|
@@ -13,10 +15,12 @@ class MemosController < UITableViewController
   end
 
   def reload
+    SVProgressHUD.show
     BW::HTTP.get('https://qiita.com/api/v1/items') do |response|
       @item = BW::JSON.parse(response.body.to_s)
       self.refreshControl.endRefreshing
       self.tableView.reloadData
+      SVProgressHUD.dismiss
     end
   end
 
