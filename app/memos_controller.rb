@@ -6,6 +6,18 @@ class MemosController < UITableViewController
       self.tableView.reloadData
     end
     self.title = 'メモ一覧'
+    self.refreshControl = UIRefreshControl.new.tap do |refresh|
+      refresh.addTarget(self, action:'reload', forControlEvents:UIControlEventValueChanged)
+    end
+
+  end
+
+  def reload
+    BW::HTTP.get('https://qiita.com/api/v1/items') do |response|
+      @item = BW::JSON.parse(response.body.to_s)
+      self.refreshControl.endRefreshing
+      self.tableView.reloadData
+    end
   end
 
   def tableView(tv, numberOfRowsInSection:section)
